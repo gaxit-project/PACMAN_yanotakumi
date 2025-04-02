@@ -24,7 +24,7 @@ public abstract class Ghost : MonoBehaviour
     }
 
     public Vector3 ScatterTarget = new Vector3(11.5f, 18.5f, 0); //blinky
-    [HideInInspector] public Vector3 EatenTarget = new Vector3(0, 3f, 0);
+    [HideInInspector] public Vector3 EatenTarget = new Vector3(0f, 0f, 0f);
 
     public bool NodeDirectionLock = false;
     StateMachine _stateMachine;

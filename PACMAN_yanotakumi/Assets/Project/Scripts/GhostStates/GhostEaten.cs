@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class GhostEaten : GhostState, IGhostStates
 {
+    Bounds homeBounds;
     public GhostStateID StateID => GhostStateID.Eaten;
     public GhostEaten(Ghost ghost) : base(ghost)
     {
@@ -19,11 +20,13 @@ public class GhostEaten : GhostState, IGhostStates
     }
     public void Update()
     {
-        if (Vector3.Distance(_ghost.EatenTarget, _ghost.transform.position) < 1.3f)
+
+        if (Vector3.Distance(_ghost.EatenTarget, _ghost.transform.position) < 0.3f)
         {
             _ghost.StateMachine.ChangeState(GhostStateID.Chase);
             _ghost.StartBugCheck();
         }
+        
     }
     public void OnNode(Node node)
     {

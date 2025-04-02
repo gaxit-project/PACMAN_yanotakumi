@@ -11,14 +11,19 @@ public class GameManager : MonoBehaviour
 
     Vector3 _pacmanInitialPos;
     public event System.Action OnScoreChanged;
-    public static GameManager Instance;
+    public static GameManager Instance { get; private set; }
     public int Score { get; private set; }
     public int Lives { get; private set; }
 
     private void Awake()
     {
-        _pacmanInitialPos = _pacman.transform.position;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // 重複するインスタンスを破棄
+            return;
+        }
         Instance = this;
+        _pacmanInitialPos = _pacman.transform.position;
     }
 
     private void Start()

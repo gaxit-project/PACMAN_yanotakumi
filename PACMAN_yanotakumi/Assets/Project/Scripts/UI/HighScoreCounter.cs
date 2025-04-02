@@ -10,7 +10,18 @@ public class HighScoreCounter : MonoBehaviour
     }
     private void OnEnable()
     {
-        GameManager.Instance.OnScoreChanged += HandleOnHighScore;
+        if(GameManager.Instance != null)
+        {
+            GameManager.Instance.OnScoreChanged += HandleOnHighScore;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnScoreChanged += HandleOnHighScore;
+        }
     }
     void HandleOnHighScore()
     {
