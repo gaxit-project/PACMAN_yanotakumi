@@ -126,6 +126,7 @@ MonoBehaviour:
   _eyes: {fileID: 841598566126853165}
   _blueBody: {fileID: 6671291380349381057}
   _whiteBody: {fileID: 1478469694198201712}
+  ghostScore: {fileID: 9101610743425197300}
   Movement: {fileID: 181954261670719402}
   Point: 200
   IsInHome: 0
@@ -145,3 +146,14 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8623671796296765678, guid: f25a4a1e4df785e4ba7319b99b44039a, type: 3}
   m_PrefabInstance: {fileID: 3114344579127277871}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9101610743425197300 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6158449681597177307, guid: f25a4a1e4df785e4ba7319b99b44039a, type: 3}
+  m_PrefabInstance: {fileID: 3114344579127277871}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0fd97e6a3f46c74589d2559f017e910, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -10,6 +10,9 @@ public class GhostEaten : GhostState, IGhostStates
     }
     public void Enter()
     {
+        // ヒットストップ
+        //_ghost.OnEaten();
+
         _ghost.EatenStateEnter();
         _ghost.Movement.ChangeSpeedMultiplier(1.7f);
     }

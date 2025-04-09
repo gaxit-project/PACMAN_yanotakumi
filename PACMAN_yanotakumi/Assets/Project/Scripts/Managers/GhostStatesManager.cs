@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GhostStatesManager : MonoBehaviour
@@ -9,6 +10,7 @@ public class GhostStatesManager : MonoBehaviour
     [SerializeField] float _minChaseTime;
     float _scatterTime;
     float _chaseTime;
+    private Movement _playerMovement;
 
     GhostStateID _initialState = GhostStateID.Scatter;
     public GhostStateID CurrentState;
@@ -24,6 +26,7 @@ public class GhostStatesManager : MonoBehaviour
         _scatterTime = GetRandomScatterTime();
         _chaseTime = GetRandomChaseTime();
         ChangeGhostStates(_initialState);
+        _playerMovement = GameObject.Find("Player").GetComponent<Movement>();
     }
     private void Update()
     {
@@ -96,5 +99,38 @@ public class GhostStatesManager : MonoBehaviour
             if (ghost.StateMachine.CurrentState == GhostStateID.Eaten) continue;
             ghost.StateMachine.ChangeState(GhostStateID.Frightened);
         }
+    }
+
+    public void StopAllMovements(float duration)
+    {
+        StartCoroutine(HitStopRoutine(duration));
+    }
+
+    IEnumerator HitStopRoutine(float duration)
+    {
+        // 移動停止
+        foreach (var ghost in _ghostsArray)
+        {
+            ghost.Movement.SaveDirections();
+            ghost.Movement.Freeze(true);
+        }
+
+        _playerMovement.SaveDirections();
+        _playerMovement.Freeze(true); // プレイヤーも止める
+
+
+        yield return new WaitForSeconds(duration);
+
+        // 移動再開（必要なら IsActive を使って再開できるように）
+        foreach (var ghost in _ghostsArray)
+        {
+            ghost.ghostScore.ResetScore();
+            ghost.Movement.Freeze(false);
+            ghost.Movement.RestoreDirections();
+        }
+
+        _playerMovement.Freeze(false);
+        _playerMovement.RestoreDirections();
+
     }
 }

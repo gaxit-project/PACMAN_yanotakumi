@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class GameCall : MonoBehaviour
 {
+    public static GameCall Instance { get; private set; }
+
     [SerializeField]
     private GameObject _Ready;
     private TextMeshProUGUI _Readytext;
@@ -18,6 +20,13 @@ public class GameCall : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // 重複するインスタンスを破棄
+            return;
+        }
+        Instance = this;
+
         _Readytext = _Ready.GetComponent<TextMeshProUGUI>();
         _Cleartext = _Clear.GetComponent<TextMeshProUGUI>();
         _Overtext = _Over.GetComponent<TextMeshProUGUI>();
@@ -39,17 +48,24 @@ public class GameCall : MonoBehaviour
         
     }
 
-    void GameReady()
+    public void GameReady()
     {
         _Ready.SetActive(true);
     }
 
-    void GameClear()
+    public void GameClear()
     {
         _Clear.SetActive(true);
     }
-    void GameOver()
+    public void GameOver()
     {
         _Over.SetActive(true);
+    }
+
+    public void ResetText()
+    {
+        _Ready.SetActive(false);
+        _Clear.SetActive(false);
+        _Over.SetActive(false);
     }
 }

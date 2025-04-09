@@ -46,8 +46,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7048a7858b2bc6648b43f0d26815b0ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _seLists: []
-  _bgmLists: []
+  _seLists:
+  - {fileID: 8300000, guid: 4428bf4281594e548b5e9b3939926357, type: 3}
+  - {fileID: 8300000, guid: 6eff425b3677cc44ea7bf540d46f2fa0, type: 3}
+  - {fileID: 8300000, guid: 5216c33b7ba1a17409a5a051b3fd16c1, type: 3}
+  - {fileID: 8300000, guid: 4cc3adc7229803b44bbfb51ead68449b, type: 3}
+  - {fileID: 8300000, guid: bdb124357109cd3429026346ef9cdf83, type: 3}
+  - {fileID: 8300000, guid: 1ac14a9975d62f447b7cfd110c9852a3, type: 3}
+  - {fileID: 8300000, guid: 06c681805e2b75e458ba1b5097af032c, type: 3}
+  - {fileID: 8300000, guid: 7afa338f23809f04eac4dc76b8a16396, type: 3}
+  - {fileID: 8300000, guid: d948d78902919dc46b987825fbd821ce, type: 3}
+  - {fileID: 8300000, guid: 63374da5812dcf2408cfa204c982577f, type: 3}
+  _bgmLists:
+  - {fileID: 8300000, guid: 64316e07b76a49f43a25280f01900073, type: 3}
   _audioSourceSE: {fileID: 4439037531782143571}
   _audioSourceBGM: {fileID: 6729502957240560503}
   SESlider: {fileID: 0}
@@ -164,7 +175,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

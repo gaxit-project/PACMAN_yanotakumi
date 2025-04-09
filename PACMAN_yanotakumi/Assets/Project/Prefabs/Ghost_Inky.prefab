@@ -72,6 +72,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4007597449332970411}
   m_SourcePrefab: {fileID: 100100000, guid: f25a4a1e4df785e4ba7319b99b44039a, type: 3}
+--- !u!114 &421911870104983591 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6158449681597177307, guid: f25a4a1e4df785e4ba7319b99b44039a, type: 3}
+  m_PrefabInstance: {fileID: 5813544341994948092}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0fd97e6a3f46c74589d2559f017e910, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2810444122308318482 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623671796296765678, guid: f25a4a1e4df785e4ba7319b99b44039a, type: 3}
@@ -106,6 +117,7 @@ MonoBehaviour:
   _eyes: {fileID: 8086337703196762366}
   _blueBody: {fileID: 2810444122308318482}
   _whiteBody: {fileID: 8003196126306042275}
+  ghostScore: {fileID: 421911870104983591}
   Movement: {fileID: 8724574516255937401}
   Point: 200
   IsInHome: 0

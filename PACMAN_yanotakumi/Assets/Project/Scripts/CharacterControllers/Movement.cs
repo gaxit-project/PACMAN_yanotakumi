@@ -26,6 +26,8 @@ public class Movement : MonoBehaviour
     // 移動中かどうかを判定するフラグ
     public bool IsActive = false;
 
+    bool _isFrozen = false;
+
     // 停止状態かどうかを判定（速度がゼロなら停止と判定）
     public bool IsStopeed => _rb.linearVelocity == Vector2.zero;
 
@@ -40,6 +42,9 @@ public class Movement : MonoBehaviour
 
     // 方向変更時に発火するイベント
     public event System.Action OnDirectionChanged;
+
+    private Vector2 _savedCurrentDir;
+    private Vector2 _savedNextDir;
 
     private void Awake()
     {
@@ -202,4 +207,54 @@ public class Movement : MonoBehaviour
     {
         _speedMultiplier = multiplier;
     }
+
+    // 一時的に方向を保存
+    public void SaveDirections()
+    {
+        _savedCurrentDir = CurrentDir;
+        _savedNextDir = NextDir;
+    }
+
+    // 保存した方向を復元
+    public void RestoreDirections()
+    {
+        CurrentDir = _savedCurrentDir;
+        NextDir= _savedNextDir;
+    }
+
+
+
+
+    public void Freeze(bool isFreeze)
+    {
+        _isFrozen = isFreeze;
+
+        if (_isFrozen)
+        {
+            _currentDir = Vector2.zero;
+            _nextDir = Vector2.zero;
+            // Rigidbodyがある場合は速度を止める
+            if (TryGetComponent(out Rigidbody2D rb))
+            {
+                rb.linearVelocity = Vector2.zero;
+                //rb.isKinematic = true;
+            }
+        }
+        else
+        {
+            if (TryGetComponent(out Rigidbody2D rb))
+            {
+                //rb.isKinematic = false;
+            }
+        }
+    }
+
+    public void Move()
+    {
+        if (_isFrozen) return;
+
+        // 通常の移動処理
+        transform.Translate(_currentDir * _speed * _speedMultiplier * Time.deltaTime);
+    }
+
 }

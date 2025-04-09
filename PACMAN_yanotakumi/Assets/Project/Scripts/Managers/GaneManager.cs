@@ -13,6 +13,12 @@ public class GameManager : MonoBehaviour
     public event System.Action OnScoreChanged;
     public static GameManager Instance { get; private set; }
     public int Score { get; private set; }
+
+    public int OneUpScore { get; private set; }
+
+    const int OneUpBorder = 10000;
+
+    public int EatSocre { get; private set; }
     public int Lives { get; private set; }
 
     private void Awake()
@@ -24,6 +30,10 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         _pacmanInitialPos = _pacman.transform.position;
+
+        SetScore(0);
+        SetLives(3);
+        OneUpScore = 0;
     }
 
     private void Start()
@@ -31,13 +41,51 @@ public class GameManager : MonoBehaviour
         NewGame();
     }
 
+    private void Update()
+    {
+
+    }
+
     /// <summary>
     /// 新しいゲームを開始し、スコアとライフを初期化する
     /// </summary>
     void NewGame()
     {
+        // 移動停止
+        foreach (var ghost in _ghostsArray)
+        {
+            ghost.Movement.SaveDirections();
+            ghost.Movement.Freeze(true);
+        }
+
+        _pacman.Movement.SaveDirections();
+        _pacman.Movement.Freeze(true); // プレイヤーも止める
+
+
+        GameCall.Instance.GameReady();
         SetScore(0);
         SetLives(3);
+        AudioManager.Instance.PlaySound(0);
+        StartCoroutine(StartGame(4.5f));
+    }
+
+    IEnumerator StartGame(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        GameCall.Instance.ResetText();
+
+        // 移動再開（必要なら IsActive を使って再開できるように）
+        foreach (var ghost in _ghostsArray)
+        {
+            ghost.Movement.Freeze(false);
+            ghost.Movement.RestoreDirections();
+        }
+
+        _pacman.Movement.Freeze(false);
+        _pacman.Movement.RestoreDirections();
+        AudioManager.Instance.PlayBGM(0);
+        _pacman._canReadInput = true;
     }
 
     /// <summary>
@@ -51,6 +99,7 @@ public class GameManager : MonoBehaviour
                 pellet.gameObject.SetActive(true);
         }
         ResetAllStates();
+        GameCall.Instance.ResetText();
     }
 
     /// <summary>
@@ -71,10 +120,7 @@ public class GameManager : MonoBehaviour
         _pacman.gameObject.SetActive(true);
     }
 
-    /// <summary>
-    /// ゲームオーバー時の処理
-    /// </summary>
-    private void GameOver()
+    public void StopGame()
     {
         foreach (Ghost ghost in _ghostsArray)
         {
@@ -83,10 +129,24 @@ public class GameManager : MonoBehaviour
         _pacman.GameFinished();
     }
 
+    /// <summary>
+    /// ゲームオーバー時の処理
+    /// </summary>
+    private void GameOver()
+    {
+        GameCall.Instance.GameOver();
+
+        StopGame();
+
+        AudioManager.Instance.PlaySound(7);
+        StartCoroutine(Next(4.5f));
+
+    }
+
     public void GhostEaten(Ghost ghost)
     {
         IncreaseScore(_ghostMultiplier * ghost.Point);
-        _ghostMultiplier++;
+        _ghostMultiplier *= 2;
     }
 
     public void PacmanEaten()
@@ -119,13 +179,25 @@ public class GameManager : MonoBehaviour
 
     public void IncreaseScore(int score)
     {
+        EatSocre = score;
         this.Score += score;
+        OneUpScore += score;
+        if (OneUpScore >= OneUpBorder)
+        {
+            OneUpLives();
+            OneUpScore = 0;
+        }
         OnScoreChanged?.Invoke();
     }
 
     void SetLives(int lives)
     {
         this.Lives = lives;
+    }
+
+    void OneUpLives()
+    {
+        this.Lives++;
     }
 
     public void PowerPelletEaten()
@@ -157,15 +229,28 @@ public class GameManager : MonoBehaviour
     {
         if (!IsThereAnyPelletLeft())
         {
-            GameOver();
+            GameCall.Instance.GameClear();
+            StopGame();
+            AudioManager.Instance.PlaySound(9);
             Invoke(nameof(NewRound), 3f);
         }
     }
 
     private void ResetGhostMultiplier()
     {
+        EatSocre = 0;
         _ghostMultiplier = 1;
     }
+
+    IEnumerator Next(float time)
+    {
+
+        yield return new WaitForSeconds(time);
+
+        GameCall.Instance.ResetText();
+        SceneManager.Instance.Title();
+    }
+
 
     public void DebugPellet()
     {

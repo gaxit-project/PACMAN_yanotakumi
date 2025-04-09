@@ -91,6 +91,11 @@ public class AudioManager : MonoBehaviour
         }
         */
 
+        if(SceneManager.Instance.GetScene() == "Setting" && SESlider == null && BGMSlider == null)
+        {
+            InitializeSliders();
+        }
+
     }
 
     /// <summary>
@@ -99,8 +104,8 @@ public class AudioManager : MonoBehaviour
 
     public void InitializeSliders()
     {
-        SESlider = GameObject.Find("Canvas/seSlider").GetComponent<Slider>();
-        BGMSlider = GameObject.Find("Canvas/bgmSlider").GetComponent<Slider>();
+        SESlider = GameObject.Find("SettingCanvas/SE/Slider").GetComponent<Slider>();
+        BGMSlider = GameObject.Find("SettingCanvas/BGM/Slider").GetComponent<Slider>();
 
         // スライダー初期値を反映
         SESlider.value = seVolume;
@@ -114,14 +119,6 @@ public class AudioManager : MonoBehaviour
         BGMSlider.onValueChanged.AddListener(delegate { OnBGMVolumeChange(); });
     }
     #region シーンを移動してSettingシーン戻ってきた際の処理
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {

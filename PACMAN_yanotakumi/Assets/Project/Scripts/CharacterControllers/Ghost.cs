@@ -13,26 +13,37 @@ public abstract class Ghost : MonoBehaviour
     [SerializeField] GameObject _blueBody;
     [SerializeField] GameObject _whiteBody;
 
+    public GhostScore ghostScore;
+
     public Movement Movement;
     public int Point = 200;
     
     public bool IsInHome;
     public float HomeExitTime;
+    // チェイス（追跡）時のターゲット位置（デフォルトはパックマンの位置）
     public virtual Vector3 ChaseTarget()
     {
-        return  _targetPacman.transform.position;
+        return _targetPacman.transform.position;
     }
 
-    public Vector3 ScatterTarget = new Vector3(11.5f, 18.5f, 0); //blinky
-    [HideInInspector] public Vector3 EatenTarget = new Vector3(0f, 0f, 0f);
+    // 各モードのターゲット位置
+    public Vector3 ScatterTarget = new Vector3(11.5f, 18.5f, 0); // ブリンキーの散策ターゲット
+    [HideInInspector] public Vector3 EatenTarget = new Vector3(0f, 3f, 0f); // 食べられた後のターゲット
 
+    // ノードの方向固定フラグ
     public bool NodeDirectionLock = false;
+
+    // ステートマシン
     StateMachine _stateMachine;
+    // 初期位置
     Vector3 _initalPos;
+    // 現在の位置
     public Vector2 CurrentPos => transform.position;
 
     public StateMachine StateMachine { get => _stateMachine; }
+    // 経過時間
     public float TimeConsumed = 0;
+    // ノード内にいるかどうか
     public bool IsInNode = false;
 
     private void Awake()
@@ -60,21 +71,31 @@ public abstract class Ghost : MonoBehaviour
     {
         _stateMachine.Update();
     }
+    // 移動を停止
     public void StopMovement()
     {
         Movement.IsActive = false;
     }
+
+    // 移動を開始
+    public void StartMovement()
+    {
+        Movement.IsActive = true;
+    }
+
+    // 進行方向を逆に変更
     public void ChangeDirToOpposite()
     {
         Movement.ChangeToOppositeDir();
     }
+
+    // 状態をリセット
     public void ResetState()
     {
         Movement.IsActive = true;
         transform.position = _initalPos;
         Movement.ResetState();
         this.gameObject.SetActive(true);
-
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -90,6 +111,9 @@ public abstract class Ghost : MonoBehaviour
                     break;
                 case GhostStateID.Frightened:
                     GameManager.Instance.GhostEaten(this);
+                    AudioManager.Instance.PlaySound(6);
+                    ghostScore.SetScore(GameManager.Instance.EatSocre);
+                    OnEaten();
                     _stateMachine.ChangeState(GhostStateID.Eaten);
                     break;
                 default:
@@ -97,6 +121,8 @@ public abstract class Ghost : MonoBehaviour
             }
         }
     }
+
+    // ノードに接触中の処理
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Node"))
@@ -123,6 +149,8 @@ public abstract class Ghost : MonoBehaviour
     {
         NodeDirectionLock = true;
     }
+
+    // 怯え状態の見た目
     public void FrightenedState()
     {
         _body.gameObject.SetActive(false);
@@ -132,6 +160,7 @@ public abstract class Ghost : MonoBehaviour
 
         _collider.isTrigger = false;
     }
+    // 怯え状態（白と青が交互）の見た目
     public void WhiteBlueLook()
     {
         _body.gameObject.SetActive(false);
@@ -141,6 +170,7 @@ public abstract class Ghost : MonoBehaviour
 
         _collider.isTrigger = false;
     }
+    // 通常の見た目
     public void DefaultLook()
     {
         _body.gameObject.SetActive(true);
@@ -151,6 +181,7 @@ public abstract class Ghost : MonoBehaviour
         _collider.isTrigger = false;
         NodeDirectionLock = false;
     }
+    // 食べられた状態の見た目
     public void EatenStateEnter()
     {
         _body.gameObject.SetActive(false);
@@ -160,6 +191,8 @@ public abstract class Ghost : MonoBehaviour
 
         _collider.isTrigger = true;
     }
+
+    // 目的地への最短ルートを決定
     public Vector2 MinDistanceDirection(Node node, Vector3 target)
     {
         float minDistance = float.MaxValue;
@@ -215,6 +248,34 @@ public abstract class Ghost : MonoBehaviour
         }
         return priority;
     }
+
+    public void OnEaten()
+    {
+        StartCoroutine(EatenSequence());
+    }
+
+    IEnumerator EatenSequence()
+    {
+        // アニメーション再生（Animatorがある場合）
+        /*
+        if (TryGetComponent(out Animator animator))
+        {
+            animator.SetTrigger("Eaten");  // "Eaten" トリガーを Animator に設定
+        }
+        */
+
+        // 全ての Movement を止める
+        GhostStatesManager.Instance.StopAllMovements(0.4f);
+
+        // 0.4秒待機
+        yield return new WaitForSeconds(0.4f);
+
+        // 状態を Eaten に変更
+        _stateMachine.ChangeState(GhostStateID.Eaten);
+    }
+
+
+
     public void StartBugCheck()
     {
         StopAllCoroutines();
@@ -230,5 +291,7 @@ public abstract class Ghost : MonoBehaviour
         }
         yield return null;
     }
+
+
 
 }

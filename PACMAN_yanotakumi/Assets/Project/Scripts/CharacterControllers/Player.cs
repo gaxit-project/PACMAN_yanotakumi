@@ -12,10 +12,15 @@ public class Player : MonoBehaviour
     [SerializeField] Animator _anim;
 
     // 入力を受け付けるかどうか
-    bool _canReadInput = true;
+    public bool _canReadInput { get ; set ; }
 
     // Movementコンポーネントのプロパティ
     public Movement Movement { get => _movement; }
+
+    private void Awake()
+    {
+        _canReadInput = false;
+    }
 
     private void OnEnable()
     {
@@ -33,22 +38,27 @@ public class Player : MonoBehaviour
             _movement.IsActive = true;
         }
 
-        // 入力による移動方向の変更
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+        Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        float angle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
+
+        if (input.magnitude > 0.1f) // 適当な閾値
         {
-            _movement.SetDirection(Vector2.up);
-        }
-        else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            _movement.SetDirection(Vector2.down);
-        }
-        else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            _movement.SetDirection(Vector2.left);
-        }
-        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            _movement.SetDirection(Vector2.right);
+            if (angle >= 45 && angle < 135) // 上
+            {
+                _movement.SetDirection(Vector2.up);
+            }
+            else if (angle >= -135 && angle < -45) // 下
+            {
+                _movement.SetDirection(Vector2.down);
+            }
+            else if (angle >= -45 && angle < 45) // 右
+            {
+                _movement.SetDirection(Vector2.right);
+            }
+            else // 左
+            {
+                _movement.SetDirection(Vector2.left);
+            }
         }
     }
 
@@ -97,6 +107,7 @@ public class Player : MonoBehaviour
     /// </summary>
     public void Eaten()
     {
+        AudioManager.Instance.PlaySound(4);
         _canReadInput = false;               // 入力を禁止
         _movement.StopMovement();            // 移動を停止
         _movement.Rb.simulated = false;      // Rigidbodyを無効化
@@ -112,6 +123,17 @@ public class Player : MonoBehaviour
         _movement.StopMovement();            // 移動を停止
         _movement.IsActive = false;          // 移動を無効化
         _anim.SetTrigger("Finished");        // 終了アニメーション再生
+    }
+
+    public void PlayerStop()
+    {
+        _movement.StopMovement();            // 移動を停止
+        _movement.IsActive = false;          // 移動を無効化
+    }
+
+    public void PlayerStart()
+    {
+        _movement.IsActive = true;          // 移動を無効化
     }
 
     /// <summary>
